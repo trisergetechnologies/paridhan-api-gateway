@@ -192,6 +192,8 @@ const buildListCacheKey = (query) =>
 const buildSingleCacheKey = (productId) =>
   `${REDIS_CACHE_PREFIX}:products:single:${productId}`;
 
+const buildHeroCacheKey = () => `${REDIS_CACHE_PREFIX}:public:hero`;
+
 const authSessionKey = (sid) => `${REDIS_AUTH_PREFIX}:sid:${sid}`;
 
 const getCached = async (key) => {
