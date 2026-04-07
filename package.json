@@ -1,0 +1,20 @@
+{
+  "name": "paridhan-api-gateway",
+  "version": "1.0.0",
+  "description": "Single entry proxy for Paridhan API — attaches transaction id and timestamps",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^3.0.5",
+    "ioredis": "^5.9.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
