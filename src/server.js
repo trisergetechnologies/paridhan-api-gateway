@@ -9,8 +9,8 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 const app = express();
-const PORT = Number(process.env.GATEWAY_PORT || 4000);
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:5000";
+const PORT = Number(process.env.GATEWAY_PORT || 4601);
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:4600";
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
 const REDIS_CACHE_PREFIX = process.env.REDIS_CACHE_PREFIX || "paridhan-gateway";
 const REDIS_AUTH_PREFIX = process.env.REDIS_AUTH_PREFIX || "paridhan:auth";
