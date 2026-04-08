@@ -165,6 +165,17 @@ const parseCookie = (req, name) => {
   return null;
 };
 
+/** Dashboard SPA sends Bearer; storefront uses httpOnly pa_access cookie. Prefer cookie when both exist. */
+const parseBearerAccessToken = (req) => {
+  const raw = req.headers.authorization;
+  if (!raw || typeof raw !== "string") return null;
+  const m = raw.match(/^Bearer\s+(\S+)/i);
+  return m ? m[1] : null;
+};
+
+const getProtectedRouteAccessToken = (req) =>
+  parseCookie(req, ACCESS_COOKIE) || parseBearerAccessToken(req);
+
 const ensureRedisConnection = async () => {
   if (redis.status === "ready" || redis.status === "connecting") return true;
   try {
@@ -219,7 +230,7 @@ const authGuard = async (req, res, next) => {
   if (!isProtectedPath(req.path)) return next();
   const isLogoutPath = req.path === "/auth/logout" || req.path === "/auth/logout-all" || req.path === "/api/v1/auth/logout" || req.path === "/api/v1/auth/logout-all";
 
-  const token = parseCookie(req, ACCESS_COOKIE);
+  const token = getProtectedRouteAccessToken(req);
   if (!token) {
     return res.status(401).json({
       success: false,
