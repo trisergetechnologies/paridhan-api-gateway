@@ -1,4 +1,6 @@
 import { randomUUID } from "crypto";
+import path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -6,7 +8,8 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import Redis from "ioredis";
 import jwt from "jsonwebtoken";
 
-dotenv.config();
+const gatewayRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+dotenv.config({ path: path.join(gatewayRoot, ".env") });
 
 const app = express();
 const PORT = Number(process.env.GATEWAY_PORT || 4601);
@@ -449,6 +452,12 @@ app.get("/api/v1/public/products/single/:slug", attachRequestContext, gatewayApi
   }
 });
 
+const rewriteToBackendApiPath = (pathValue) => {
+  if (!pathValue) return "/api/v1";
+  if (pathValue.startsWith("/api/v1")) return pathValue;
+  return `/api/v1${pathValue.startsWith("/") ? pathValue : `/${pathValue}`}`;
+};
+
 app.use(
   "/api/v1",
   attachRequestContext,
@@ -457,7 +466,8 @@ app.use(
   createProxyMiddleware({
     target: BACKEND_URL,
     changeOrigin: true,
-    pathRewrite: (path) => `/api/v1${path}`,
+    followRedirects: false,
+    pathRewrite: rewriteToBackendApiPath,
     on: {
       proxyReq(proxyReq, req) {
         if (req.auth) {
