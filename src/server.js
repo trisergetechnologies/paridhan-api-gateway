@@ -8,12 +8,14 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import Redis from "ioredis";
 import jwt from "jsonwebtoken";
 
+import { resolveBackendUrl, validateGatewayEnv } from "./config/backendUrl.js";
+
 const gatewayRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: path.join(gatewayRoot, ".env") });
 
 const app = express();
 const PORT = Number(process.env.GATEWAY_PORT || 4601);
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:4600";
+const BACKEND_URL = resolveBackendUrl();
 const REDIS_URL = process.env.REDIS_URL || "";
 const REDIS_CACHE_PREFIX = process.env.REDIS_CACHE_PREFIX || "paridhan-gateway";
 const REDIS_AUTH_PREFIX = process.env.REDIS_AUTH_PREFIX || "paridhan:auth";
@@ -489,6 +491,8 @@ app.use(
     },
   }),
 );
+
+validateGatewayEnv(BACKEND_URL);
 
 app.listen(PORT, () => {
   console.log(`API Gateway listening on port ${PORT} -> ${BACKEND_URL}`);
